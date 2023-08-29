@@ -9,18 +9,15 @@ const Todo: React.FC = () => {
   useEffect(() => {
     const storedData:ITodo[] = JSON.parse(localStorage.getItem("data")||"[]");
       setData(storedData);
-      //localStorage.setItem("newId", String(Number(1)));
   }, []);
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
-   // const currentId = localStorage.getItem("newId");
     const newItem:ITodo = {
       id: data.length+1,
       title: todo,
       completed: false,
     };
-   // localStorage.setItem("newId", String(Number(currentId) + 1));
     const updatedData = [...data, newItem];
     setData(updatedData);
     localStorage.setItem("data", JSON.stringify(updatedData));
@@ -28,15 +25,17 @@ const Todo: React.FC = () => {
     setTodo('');
   };
 
-  const handleDelete = (id: number) => {
-    const filteredData = data.filter(item => item.id !== id);
+  const handleDelete = (id: number,idx:number) => {
+    console.log(idx)
+    const filteredData = data.filter((item,indx) => indx !== idx);
     setData(filteredData);
     localStorage.setItem("data", JSON.stringify(filteredData));
+    window.location.reload();
   };
 
-  const handleChecked = (id: number) => {
-    const updatedData = data.map(item => {
-      if (item.id === id) {
+  const handleChecked = (id: number,idx:number) => {
+    const updatedData = data.map((item,indx) => {
+      if (idx === indx) {
         return { ...item, completed: !item.completed };
       }
       return item;
@@ -71,17 +70,17 @@ const Todo: React.FC = () => {
               className="mb-2 ml-2 bg-[#404650] text-white rounded-2xl p-2"
             ></input>
           </form>
-          {data.map((item) => {
+          {data.map((item,idx) => {
             return (
               <div
                 className=" pl-5 pr-5 sm:pl-10 sm:pr-10 flex text-left w-full justify-center"
-                key={item.id}
+                key={idx}
               >
                 <input
                   type="checkbox"
                   className="p-2 bg-[#47484b]"
                   defaultChecked={item.completed}
-                  onChange={()=>handleChecked(item.id)}
+                  onChange={()=>handleChecked(item.id,idx)}
                 ></input>
                 <div className="flex w-full">
                   <div className=" bg-[#47484b] text-white w-2/3 p-2 ml-5 mb-1 mr-2 text-left rounded-md">
@@ -89,7 +88,7 @@ const Todo: React.FC = () => {
                   </div>
                   <button
                     className="bg-[#7e2122] p-2 rounded-md bottom-1 mb-1"
-                    onClick={() => handleDelete(item.id)}
+                    onClick={() => handleDelete(item.id,idx)}
                   >
                     <span className="mr-1 ml-1">x</span>
                   </button>
